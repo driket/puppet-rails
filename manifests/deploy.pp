@@ -42,18 +42,6 @@ define rails::deploy(
 ) {
   $app_path = "${deploy_path}/${app_name}"
 
-  ensure_resource('user', $app_user, {
-    ensure     => present,
-    system     => true,
-    managehome => true,
-    home       => "/home/${app_user}",
-  })
-
-  ensure_resource('group', $app_group, {
-    ensure  => present,
-    require => User[$app_user],
-  })
-
   mkdir_p($deploy_path, {
     ensure  => directory,
     mode    => '0755',
