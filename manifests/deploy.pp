@@ -30,6 +30,7 @@ define rails::deploy(
   $app_name          = $name,
   $deploy_path       = '/data',
   $app_user          = 'deploy',
+  $app_group         = 'deploy',
   $rails_env         = 'production',
   $database_name     = 'UNSET',
   $database_host     = 'localhost',
@@ -48,7 +49,7 @@ define rails::deploy(
     home       => "/home/${app_user}",
   })
 
-  ensure_resource('group', $app_user, {
+  ensure_resource('group', $app_group, {
     ensure  => present,
     require => User[$app_user],
   })
@@ -61,7 +62,7 @@ define rails::deploy(
   file { $app_path:
     ensure  => directory,
     owner   => $app_user,
-    group   => $app_user,
+    group   => $app_group,
     mode    => '0775',
     require => File[$deploy_path],
   }
@@ -86,7 +87,7 @@ define rails::deploy(
     file { ["${app_path}/shared", "${app_path}/shared/config"]:
       ensure => directory,
       owner  => $app_user,
-      group  => $app_user,
+      group  => $app_group,
       mode   => '0775',
     }
 
@@ -94,7 +95,7 @@ define rails::deploy(
       ensure  => file,
       path    => "${app_path}/shared/config/database.yml",
       owner   => $app_user,
-      group   => $app_user,
+      group   => $app_group,
       content => template('rails/database.yml.erb'),
       mode    => '0644',
       require => File[$app_path],
